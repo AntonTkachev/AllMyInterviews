@@ -53,3 +53,15 @@ cascadetype merge зачем
 зачем переходить с java 8 на java 11  
 Есть synchronize static public method, что будет монитором для него?
 dump memory  
+
+
+DataArt
+
+rdd dataframe dataset
+spark shuffle
+actor system, zio2 посмотреть в эту сторону
+scala types|type level|type class, полиморфные программы, given
+function vs method
+filter vs filterWith
+sql transaction, уровни изоляции и аномалии транзакций
+профилирование запросов в реалиционных БД
