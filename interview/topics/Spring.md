@@ -57,3 +57,214 @@
 **global-session** — Создает и возвращает экземпляр бина для глобальной HTTP сессии*.
 
 
+-----
+
+
+**Spring Boot Starter** — это специальные модули Spring Boot, которые содержат:
+- Готовые наборы часто используемых зависимостей
+- Автоконфигурацию компонентов
+- Предварительно настроенные бины
+- Файлы свойств с дефолтными значениями
+
+Они значительно упрощают разработку, избавляя от необходимости ручной настройки. Например:
+- spring-boot-starter-web для веб-приложений
+- spring-boot-starter-data-jpa для работы с БД
+- spring-boot-starter-security для безопасности
+- spring-boot-starter-test для тестирования
+
+Стартеры следуют принципу "convention over configuration" и позволяют быстро начать разработку с минимальными настройками.
+
+Легко подключаются в проект через систему сборки:
+
+
+**Spring Security** — это мощный и гибкий фреймворк для обеспечения безопасности приложений на базе Spring. Он предоставляет комплексные решения для аутентификации и авторизации.
+
+Основные возможности:
+- Аутентификация (проверка подлинности пользователя)
+- Авторизация (проверка прав доступа)
+- Защита от атак (CSRF, XSS, Session Fixation)
+- Интеграция с различными системами безопасности
+
+Настройка Spring Security:
+
+1. **Базовая настройка**:
+   - Добавить зависимость `spring-boot-starter-security`
+   - Создать класс конфигурации с аннотацией `@EnableWebSecurity`
+   - Расширить `WebSecurityConfigurerAdapter` (до Spring Security 5.7) или использовать функциональный подход (после 5.7)
+
+2. **Пример конфигурации**:
+   ```java
+   @Configuration
+   @EnableWebSecurity
+   public class SecurityConfig extends WebSecurityConfigurerAdapter {
+       
+       @Override
+       protected void configure(HttpSecurity http) throws Exception {
+           http
+               .authorizeRequests()
+                   .antMatchers("/public/**").permitAll()
+                   .antMatchers("/admin/**").hasRole("ADMIN")
+                   .anyRequest().authenticated()
+               .and()
+               .formLogin()
+                   .loginPage("/login")
+                   .permitAll()
+               .and()
+               .logout()
+                   .permitAll();
+       }
+       
+       @Override
+       protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+           auth.inMemoryAuthentication()
+               .withUser("user").password(passwordEncoder().encode("password")).roles("USER")
+               .and()
+               .withUser("admin").password(passwordEncoder().encode("admin")).roles("ADMIN");
+       }
+       
+       @Bean
+       public PasswordEncoder passwordEncoder() {
+           return new BCryptPasswordEncoder();
+       }
+   }
+   ```
+
+3. **Настройка аутентификации**:
+   - In-memory аутентификация (для тестирования)
+   - JDBC аутентификация (с использованием БД)
+   - UserDetailsService (собственная реализация)
+   - OAuth2/JWT для микросервисов
+
+4. **Настройка авторизации**:
+   - URL-based авторизация
+   - Method-level авторизация с @PreAuthorize, @PostAuthorize
+   - ACL (Access Control List)
+
+5. **Дополнительные настройки**:
+   - CORS и CSRF защита
+   - Remember-me функциональность
+   - Настройка сессий и их хранения
+
+-----
+
+**Spring Reactor** — это библиотека для создания асинхронных приложений на основе реактивного программирования. Она предоставляет API для работы с потоками данных и позволяет обрабатывать их асинхронно и неблокирующим образом.
+
+**Основные концепции Spring Reactor:**
+- **Mono**: Представляет собой поток данных, содержащий 0 или 1 элемент. Используется для работы с одиночными значениями или пустыми результатами.
+- **Flux**: Представляет собой поток данных, содержащий 0 или более элементов. Используется для работы с множественными значениями.
+
+**Как взаимодействовать с Spring Reactor:**
+1. **Создание потоков данных**:
+   - Используйте методы `Mono.just()`, `Mono.empty()`, `Flux.just()`, `Flux.fromIterable()` и другие для создания потоков данных.
+   
+2. **Обработка данных**:
+   - Используйте операторы, такие как `map()`, `flatMap()`, `filter()`, `reduce()`, чтобы трансформировать и фильтровать данные в потоках.
+   
+3. **Подписка на потоки данных**:
+   - Используйте метод `subscribe()` для подписки на потоки данных и получения результатов.
+
+**Примеры использования:**
+- **Mono**: 
+  ```java
+  Mono<String> mono = Mono.just("Hello, World!");
+  mono.map(String::toUpperCase)
+      .subscribe(System.out::println);
+  ```
+  В этом примере создается `Mono`, который содержит строку "Hello, World!", затем она преобразуется в верхний регистр и выводится на экран.
+
+- **Flux**:
+  ```java
+  Flux<Integer> flux = Flux.just(1, 2, 3, 4, 5);
+  flux.filter(number -> number % 2 == 0)
+      .subscribe(System.out::println);
+  ```
+  Здесь создается `Flux`, содержащий числа от 1 до 5, затем фильтруются только четные числа, которые выводятся на экран.
+
+-----
+
+Для обеспечения атомарности операций записи в БД и отправки сообщения в брокер, можно использовать следующие подходы:
+
+1. **Использование менеджера транзакций Kafka**:
+   - Настройте Kafka Transaction Manager для управления транзакциями.
+   - Объедините операции записи в БД и отправки сообщения в одну транзакцию.
+   - Если одна из операций не удалась, транзакция будет откатана, и ни одна из операций не будет завершена.
+
+2. **Ручное подтверждение сообщений в Kafka**:
+   - Используйте ручное подтверждение сообщений в Kafka.
+   - Сначала выполните запись в БД.
+   - После успешной записи в БД подтвердите сообщение в Kafka.
+   - Если запись в БД не удалась, не подтверждайте сообщение, и оно будет повторно обработано.
+
+3. **Использование двух независимых транзакций с координацией**:
+   - Создайте две независимые транзакции: одну для записи в БД и другую для отправки сообщения в Kafka.
+   - Используйте механизм координации, такой как Saga, для обеспечения согласованности между транзакциями.
+   - Если одна из транзакций не удалась, выполните компенсирующие действия для отката другой транзакции.
+
+-----
+
+**CascadeType** — это набор стратегий, которые определяют, как операции с основной сущностью влияют на связанные сущности. Вот основные типы:
+
+- **PERSIST**: Когда вы сохраняете основную сущность, все связанные сущности тоже автоматически сохраняются.
+- **MERGE**: Когда вы обновляете основную сущность, все связанные сущности тоже автоматически обновляются.
+- **REMOVE**: Когда вы удаляете основную сущность, все связанные сущности тоже автоматически удаляются.
+- **REFRESH**: Когда вы обновляете данные основной сущности из базы, все связанные сущности тоже обновляются.
+- **DETACH**: Когда вы отсоединяете основную сущность от контекста, все связанные сущности тоже отсоединяются.
+- **ALL**: Применяет все перечисленные выше действия ко всем связанным сущностям. Это как "всё включено" для операций с данными.
+
+-----
+
+Есть Controller который возвращает 1-6, как сделать что бы 1-3 возвращал ОК, а 3-6 не ОК?  
+Для решения этой задачи можно использовать несколько подходов:
+
+1. **Interceptors (перехватчики) в Spring MVC**:
+   - Перехватчики позволяют перехватывать HTTP-запросы и ответы до и после их обработки контроллером. 
+   - Можно создать перехватчик, который будет проверять возвращаемое значение и изменять HTTP-статус в зависимости от этого значения.
+   - Например, если значение находится в диапазоне от 1 до 3, установить статус 200 (OK), а если от 4 до 6, установить статус 400 (Bad Request).
+
+   Пример реализации перехватчика:
+   ```java
+   public class CustomInterceptor extends HandlerInterceptorAdapter {
+       @Override
+       public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+           if (modelAndView != null) {
+               Object result = modelAndView.getModel().get("result");
+               if (result instanceof Integer) {
+                   int value = (Integer) result;
+                   if (value >= 1 && value <= 3) {
+                       response.setStatus(HttpServletResponse.SC_OK);
+                   } else if (value >= 4 && value <= 6) {
+                       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                   }
+               }
+           }
+       }
+   }
+   ```
+
+2. **Spring AOP (Aspect-Oriented Programming)**:
+   - AOP позволяет отделить сквозную логику (например, логирование, обработку ошибок) от бизнес-логики.
+   - Можно создать аспект, который будет перехватывать выполнение метода контроллера и изменять HTTP-статус в зависимости от возвращаемого значения.
+
+   Пример реализации аспекта:
+   ```java
+   @Aspect
+   @Component
+   public class CustomAspect {
+       @AfterReturning(pointcut = "execution(* com.example.controller.MyController.myMethod(..))", returning = "result")
+       public void afterReturning(JoinPoint joinPoint, Object result) {
+           if (result instanceof Integer) {
+               int value = (Integer) result;
+               HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+               if (response != null) {
+                   if (value >= 1 && value <= 3) {
+                       response.setStatus(HttpServletResponse.SC_OK);
+                   } else if (value >= 4 && value <= 6) {
+                       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                   }
+               }
+           }
+       }
+   }
+   ```
+
+Оба подхода позволяют гибко управлять HTTP-статусами в зависимости от возвращаемых значений контроллера.
