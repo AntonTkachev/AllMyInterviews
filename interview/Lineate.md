@@ -1,2 +1,0 @@
-adtech
-dsp ssp
