@@ -1,12 +1,12 @@
 # **JDK JRE JVM**
-![JDK JRE JVM](../../img/JDK_JRE_JVM.png)
+![JDK JRE JVM](../../image/JDK_JRE_JVM.png)
 
 JDK (Java Development Kit) — Включает в себя компилятор, стандартные библиотеки классов Java, примеры, документацию, утилиты и JRE.  
 JRE (Java Runtime Environment) — Минимальная реализация виртуальной машины, необходимая для исполнения Java-приложений.  
 JVM (Java Virtual Machine) — Выполняет байт-код Java, который генерируется компилятором Java (javac) из исходного кода программы.  
 
 # Collections
-![Java Collections](../../img/Java_Collections.jpg)
+![Java Collections](../../image/Java_Collections.jpg)
 
 **ArrayList VS LinkedList?**
 
@@ -51,7 +51,7 @@ HashMap состоит из bucket`ов, «bucket» — это элементы 
 - B-дерево - O(log n) хранит много ключей в одном узле и ссылается на несколько дочерних узлов. Это уменьшает высоту дерева и, обеспечивает более быстрый доступ к диску.
 
 # Big O
-![Java Collections](../../img/O.png)
+![Java Collections](../../image/O.png)
 
 **Методы Object**
 - toString()
