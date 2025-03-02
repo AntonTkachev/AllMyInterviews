@@ -84,7 +84,7 @@ Confluent SR это инстанс Kafka Service.
 В реальной жизни будет развернут не один SR-Node, а минимум 2 (вопросы отказоустойчивости), поэтому важно понимать, как работает система из нескольких nodes.  
 
 
-![SR nodes processing](../../image/SR.webp)
+![SR nodes processing](../image/SR.webp)
 
 1. Client отправляет новую схему что бы обновить существующую в secondary node schema registry.
 2. Secondary node переправляет запрос в primary node
