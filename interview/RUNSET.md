@@ -36,5 +36,4 @@ Restful
 Rest vs grpc
 Redis?
 inline kotlin что это
-ingress kubernetes это
 потокобезопасные коллекции java

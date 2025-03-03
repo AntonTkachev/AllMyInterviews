@@ -1,0 +1,147 @@
+## Kubernetes
+
+**Kubernetes (K8s)** — это система **оркестрации контейнеров**, которая автоматизирует развертывание, управление и
+масштабирование приложений.
+
+![Kubernetes workflow](/image/KubeWorkFlow.png)
+Storage - записывается информация о нашем кластере  
+Master - управление Node  
+Worker Node - сервера где запускаются контейнеры
+
+| Компонент      | Описание                                                                |
+|----------------|-------------------------------------------------------------------------|
+| **Pod**        | Группирует контейнеры, предоставляет им общий IP и ресурсы.             |
+| **Service**    | Делает Pod’ы доступными, балансирует трафик.                            |
+| **Deployment** | Управляет масштабированием и обновлениями Pod’ов.                       |
+| **Ingress**    | Управляет HTTP/HTTPS трафиком, маршрутизирует запросы.                  |
+| **Node**       | Отдельный сервер (виртуальный или физический), который запускает Pod'ы. |
+| **Cluster**    | Группа узлов (Node’ов), управляющая рабочими нагрузками в Kubernetes.   |
+
+## 1. Pod 🟢
+
+**Pod** – это минимальная единица развертывания в Kubernetes. Он содержит **один или несколько контейнеров**, которые
+работают вместе и имеют **общий IP-адрес, файловую систему и сетевую среду**.
+
+### 🔹 Зачем нужен Pod?
+
+- Группирует несколько контейнеров (например, основной контейнер + sidecar).
+- Позволяет шарить ресурсы между контейнерами.
+- Упрощает масштабирование и управление контейнерами.
+
+### 🔹 Пример Pod'а с одним контейнером:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+    - name: my-container
+      image: nginx
+```
+
+2. Service 🔵
+
+Service – это абстракция, которая предоставляет стабильный IP-адрес и DNS-имя для набора Pod’ов, балансирует нагрузку
+между ними.
+
+🔹 Типы Service:
+• ClusterIP (по умолчанию) – доступен только внутри кластера.
+• NodePort – доступен снаружи через узлы (NodeIP:Port).
+• LoadBalancer – создает внешний балансировщик нагрузки (AWS, GCP, Azure).
+• ExternalName – перенаправляет трафик на внешнее доменное имя.
+
+🔹 Пример ClusterIP Service:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+```
+
+📌 Как это работает?
+
+1. selector находит Pod’ы с лейблом app: my-app.
+2. Запросы на my-service:80 перенаправляются на Pod:8080.
+
+3. Deployment ⚙️
+
+Deployment – это контроллер, который управляет развёртыванием и обновлением Pod’ов.
+
+🔹 Зачем нужен Deployment?
+• Обеспечивает автоматическое масштабирование и обновления.
+• Гарантирует отказоустойчивость (если Pod упадёт, будет создан новый).
+• Позволяет делать категоричные (Rolling Update) и резкие (Recreate) обновления.
+
+🔹 Пример Deployment:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-container
+          image: nginx
+```
+
+📌 Как это работает?
+
+1. replicas: 3 – запускает 3 Pod’а.
+2. Если один Pod падает, Kubernetes автоматически создаёт новый.
+3. Поддерживается категоричное обновление (Rolling Update).
+
+4. Ingress 🌍
+
+Ingress – это ресурс Kubernetes, который управляет входящим HTTP/HTTPS трафиком и маршрутизирует его на Service’ы.
+
+🔹 Зачем нужен Ingress?
+• Позволяет использовать один внешний IP для множества сервисов.
+• Поддерживает SSL/TLS (HTTPS).
+• Реализует маршрутизацию по путям и доменам.
+
+🔹 Пример Ingress:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+    - host: myapp.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: my-service
+                port:
+                  number: 80
+```
+
+📌 Как это работает?
+
+1. Все запросы на myapp.example.com перенаправляются в my-service:80.
+2. Можно задавать разные маршруты для разных сервисов.
+3. Можно добавить TLS для HTTPS.

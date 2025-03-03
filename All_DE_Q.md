@@ -171,20 +171,6 @@ Kuber
 Terraform
 Azure
 
-## Kubernetes
-
-Объекты:
-
-- Pod
-- Deployment
-- Service
-- Nodes
-- Cluster
-
-![Kubernetes workflow](/image/KubeWorkFlow.png)
-Storage - записывается информация о нашем кластере  
-Master - управление Node  
-Worker Node - сервера где запускаются контейнеры
 
 ### Kubernetes Cloud Сервисы
 
