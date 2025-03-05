@@ -29,9 +29,8 @@ Structured Streaming идеально подходит для использов
 
 1. Data Warehouse, Data Lake, and Data Modeling concepts:
 
-- Star Schema, Snowflake, Data Vault
+- Data Vault
   https://habr.com/ru/post/348188/
 - SCD type 2
-- CDC? – what is it and how you implemented?
 
 

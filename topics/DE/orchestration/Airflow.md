@@ -101,15 +101,15 @@ from datetime import datetime
 
 
 def extract_data():
-    print("Extracting data")
+  print("Extracting data")
 
 
 def transform_data():
-    print("Transforming data")
+  print("Transforming data")
 
 
 def load_data():
-    print("Loading data into database")
+  print("Loading data into database")
 
 
 dag = DAG('etl_process', start_date=datetime(2023, 1, 1), schedule_interval='@daily')
