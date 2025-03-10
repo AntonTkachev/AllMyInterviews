@@ -31,6 +31,4 @@ Structured Streaming идеально подходит для использов
 
 - Data Vault
   https://habr.com/ru/post/348188/
-- SCD type 2
-
 

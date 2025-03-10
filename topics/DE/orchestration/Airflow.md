@@ -33,7 +33,7 @@
 - Это основной строительный блок Airflow, который представляет собой граф, состоящий из задач, которые нужно выполнить в
   определенном порядке. DAG описывает структуру и порядок выполнения задач, их зависимости и расписание.
 - **Пример DAG**:
-  ```python
+  ```
   from airflow import DAG
   from airflow.operators.dummy_operator import DummyOperator
   from airflow.operators.python_operator import PythonOperator
@@ -94,22 +94,22 @@
 
 Пример кода для описания такого DAG:
 
-```python
+```
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime
 
 
 def extract_data():
-  print("Extracting data")
+    print("Extracting data")
 
 
 def transform_data():
-  print("Transforming data")
+    print("Transforming data")
 
 
 def load_data():
-  print("Loading data into database")
+    print("Loading data into database")
 
 
 dag = DAG('etl_process', start_date=datetime(2023, 1, 1), schedule_interval='@daily')

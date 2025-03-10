@@ -4,21 +4,9 @@
 
 Если есть **10 серверов**, развернутых в **AWS**, и нужно развернуть ещё **5**, в **Terraform** это выглядит так:
 
-### **Код инфраструктуры в AWS**
-
 ```hcl
 resource "aws_instance" "example" {
-    count = 10
-    ami = "ami-0c55b159cbfafe1f0"
-    instance_type = "t2.micro"
-}
-```
-
-### **Код инфраструктуры в Terraform**
-
-```hcl
-resource "aws_instance" "example" {
-    count = 15
+    count = 10 -> count = 15
     ami = "ami-0c55b159cbfafe1f0"
     instance_type = "t2.micro"
 }
@@ -59,8 +47,8 @@ resource "aws_instance" "example" {
 
 # **Terragrunt**
 
-**Terragrunt** – это инструмент-надстройка над **Terraform**, упрощающий управление инфраструктурой и обеспечивающий
-более удобную работу с конфигурациями.
+– инструмент-надстройка над **Terraform**, упрощающий управление инфраструктурой и обеспечивающий удобную работу с
+конфигурациями.
 
 📌 **Зачем использовать Terragrunt?**
 

@@ -1,6 +1,3 @@
-
---------------------------------------------
-
 [//]: # (http://blog.madhukaraphatak.com/secondary-namenode---what-it-really-do/)
 
 [//]: # (https://bitworks.software/2018-08-07-hadoop-cluster-setup-with-hdfs-ha.html)
@@ -71,7 +68,6 @@ Data Lineage показывает, как данные изменялись, Dat
 ------------
 
 - Architectural approaches, Lambda, Delta
-
 
 https://habr.com/ru/post/555920/
 
@@ -155,7 +151,6 @@ Java
 Kuber
 Terraform
 Azure
-
 
 ### Kubernetes Cloud Сервисы
 

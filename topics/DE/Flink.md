@@ -6,13 +6,51 @@ Apache Flink — это **распределённая потоковая пла
 
 ---
 
-## 1. Преимущества и Недостатки Flink
+# **Архитектура Apache Flink**
+
+### **1️⃣ JobManager (Координатор)**
+
+- Управляет выполнением приложений Flink.
+- Распределяет задачи между узлами кластера.
+- Отвечает за отказоустойчивость и восстановление состояния.
+
+### **2️⃣ TaskManager (Исполнители)**
+
+- Выполняют вычисления, обрабатывают потоки данных.
+- Содержат **слоты ресурсов** (task slots) для многозадачности.
+- Связываются с **JobManager** для координации выполнения.
+
+### **3️⃣ State Backend**
+
+- Отвечает за сохранение состояния **stateful операций**.
+- Поддерживает **RocksDB, FsStateBackend, MemoryStateBackend**.
+- Используется для **checkpointing и восстановления после сбоев**.
+
+### **4️⃣ Checkpoints & Savepoints**
+
+- **Checkpoints** – автоматическое сохранение состояния для отказоустойчивости.
+- **Savepoints** – сохраняемые вручную состояния для обновлений и откатов.
+
+### **5️⃣ Sources & Sinks**
+
+- **Sources** – точки входа данных (Kafka, Kinesis, S3, базы данных).
+- **Sinks** – точки выхода (Snowflake, Redshift, ClickHouse, HDFS).
+
+## **📌 Как работает Flink?**
+
+1. **JobManager** принимает задание и разбивает его на задачи (Tasks).
+2. **TaskManager** выполняют эти задачи параллельно, используя **Task Slots**.
+3. **State Backend** хранит промежуточные данные для stateful-операций.
+4. **Checkpoints** позволяют восстановить работу при сбоях.
+5. **Результаты отправляются в Sinks (БД, Kafka, файловые системы)**.
+
+---
 
 ### **Плюсы Apache Flink**
 
 ✅ **Настоящий Stream Processing**  
-Flink изначально создан для **обработки событий в реальном времени** (в отличие от Spark Streaming, который использует *
-*микро-батчи**).
+Flink изначально создан для **обработки событий в реальном времени** (в отличие от Spark Streaming,
+который использует **микро-батчи**).
 
 ✅ **Поддержка Batch & Streaming**  
 Можно писать **как batch, так и stream приложения**, используя один и тот же API.
@@ -44,19 +82,16 @@ Flink активно использует память и CPU, особенно 
 Для продакшн-окружения **нужно уметь работать с Kubernetes, Docker, Terraform**.
 
 ❌ **Ограниченная поддержка BI-инструментов**  
-Флинк не так хорошо интегрируется с BI-решениями, как Snowflake или Redshift.
+Flink не так хорошо интегрируется с BI-решениями, как Snowflake или Redshift.
 
 ---
 
-## 2. Когда использовать Apache Flink?
-
 ### **Стоит использовать Flink, если:**
 
-✔ **Требуется настоящая потоковая обработка данных** в **реальном времени** (например, фрод-мониторинг, обработка логов,
-IoT).  
-✔ **Нужен stateful processing** (например, сессионная агрегация или сложная обработка паттернов).  
-✔ **Работа с Event Time и Watermarks** (важно учитывать запаздывающие события).  
-✔ **Высокие требования к производительности** (миллионы событий в секунду).
+- **Требуется настоящая потоковая обработка данных** в **реальном времени** (фрод-мониторинг, обработка логов, IoT).
+- **Нужен stateful processing** (сессионная агрегация или сложная обработка паттернов).
+- **Работа с Event Time и Watermarks** (важно учитывать запаздывающие события).
+- **Высокие требования к производительности** (миллионы событий в секунду).
 
 ### **Не стоит использовать Flink, если:**
 
@@ -66,7 +101,7 @@ IoT).
 
 ---
 
-## 3. Коннекторы Flink (Sources & Sinks)
+## Коннекторы Flink (Sources & Sinks)
 
 Flink поддерживает множество источников и приемников данных:
 
@@ -80,8 +115,8 @@ Flink поддерживает множество источников и при
 
 # Работа с источниками и приемниками в Apache Flink
 
-Apache Flink поддерживает множество коннекторов для работы с различными sources и sinks
-данных. Это позволяет интегрировать Flink с **Kafka, S3, Kinesis, Snowflake, Redshift, ClickHouse и другими системами**.
+Apache Flink поддерживает множество коннекторов для работы с различными sources и sinks данных.
+Это позволяет интегрировать Flink с **Kafka, S3, Kinesis, Snowflake, Redshift, ClickHouse**.
 
 ---
 
@@ -108,8 +143,6 @@ DataStream<String> stream = env.fromSource(kafkaSource, WatermarkStrategy.noWate
 ### **Kafka Sink (Запись в Kafka)**
 
 Flink также позволяет записывать обработанные данные обратно в Kafka с помощью `KafkaSink`.
-
-**Пример KafkaSink:**
 
 ```
 KafkaSink<String> kafkaSink = KafkaSink.<String>builder()
@@ -159,8 +192,8 @@ DataStream<String> kinesisStream = env.addSource(kinesisSource);
 
 ## **3. Flink SQL и интеграция со Snowflake/Redshift/ClickHouse**
 
-Flink поддерживает SQL-обработку потоковых данных с помощью **Flink Table API и Flink SQL**. Это позволяет работать с *
-*Snowflake, Redshift и ClickHouse**.
+Flink поддерживает SQL-обработку потоковых данных с помощью **Flink Table API и Flink SQL**.
+Это позволяет работать с **Snowflake, Redshift и ClickHouse**.
 
 ### **Чтение и запись в Snowflake**
 
@@ -254,16 +287,16 @@ WatermarkStrategy<MyEvent> watermarkStrategy = WatermarkStrategy
 
 ### Обработка late data
 
-Запаздывающие события — это данные, которые **приходят после установленного watermark'а**. Flink позволяет настроить их
-обработку несколькими способами:
+Запаздывающие события — это данные, которые **приходят после установленного watermark'а**.
+Flink позволяет настроить их обработку несколькими способами:
 
 1. **Игнорирование (Default)**: Поздние события отбрасываются.
-2. **Сохранение в отдельный поток (Side Output)**: Можно настроить Flink для отправки запаздывающих событий в
-   альтернативный поток данных.
-3. **Reprocessing**: Можно обновлять агрегированные данные, если запаздывающее событие пришло позже.
+2. **Side Output**: Настроить Flink для отправки запаздывающих событий в альтернативный поток данных.
+3. **Reprocessing**: Обновлять агрегированные данные, если запаздывающее событие пришло позже.
 
 ```java
-final OutputTag<MyEvent> lateTag = new OutputTag<MyEvent>("late-data") {};
+final OutputTag<MyEvent> lateTag = new OutputTag<MyEvent>("late-data") {
+};
 
 SingleOutputStreamOperator<MyEvent> processedStream = stream
         .assignTimestampsAndWatermarks(watermarkStrategy)
@@ -277,10 +310,10 @@ SingleOutputStreamOperator<MyEvent> processedStream = stream
 
 ## 2. Window Functions (Tumbling, Sliding, Session)
 
-Оконные функции (Windows) позволяют агрегировать данные **по времени или другим критериям**. Flink поддерживает
-несколько типов окон:
+Оконные функции (Windows) позволяют агрегировать данные **по времени или другим критериям**.
+Flink поддерживает несколько типов окон:
 
-### Tumbling Windows (неперекрывающиеся окна)
+### Tumbling Windows
 
 - Разбивает поток данных на **фиксированные интервалы времени**.
 - Каждое событие попадает **только в одно окно**.
@@ -290,7 +323,7 @@ stream.keyBy(event ->event.getKey()).window(TumblingEventTimeWindows.of(Time.sec
    .reduce((e1, e2) ->newMyEvent(e1.getId(),e1.getValue() +e2.getValue()));
 ```
 
-### Sliding Windows (перекрывающиеся окна)
+### Sliding Windows
 
 - Разбивает поток на **окна фиксированного размера**, но с **перекрытием**.
 - Каждое событие может попадать в **несколько окон одновременно**.
@@ -300,7 +333,7 @@ stream.keyBy(event -> event.getKey()).window(SlidingEventTimeWindows.of(Time.sec
    .reduce((e1, e2) -> new MyEvent(e1.getId(),e1.getValue() +e2.getValue()));
 ```
 
-### Session Windows (динамические окна)
+### Session Windows
 
 - Определяются **не временем, а активностью пользователя**.
 - Окно закрывается, если **нет новых событий в течение заданного интервала**.
@@ -312,7 +345,7 @@ stream.keyBy(event ->event.getUserId()).window(ProcessingTimeSessionWindows.with
 
 ---
 
-## 3. Checkpointing и Savepoints
+## Checkpointing и Savepoints
 
 ### Checkpointing (автоматическое сохранение состояния)
 
@@ -406,7 +439,7 @@ flink rescale-job --jobId <JOB_ID> --newParallelism 8
 
 ### **Stateful Processing и RocksDB**
 
-Если в Flink используется **Stateful Processing** (например, агрегированные значения), состояние данных сохраняется в
+Если в Flink используется **Stateful Processing** (агрегированные значения), состояние данных сохраняется в
 памяти или во внешнем хранилище. По умолчанию Flink хранит состояние в **JVM Heap**, но для больших данных рекомендуется
 **RocksDB**.
 
@@ -429,7 +462,7 @@ taskmanager.memory.managed.fraction: 0.5  # 50% памяти выделяетс�
 3. **Контролируйте Checkpointing**, так как он может потреблять много ресурсов:
 
 ```java
-env.enableCheckpointing(60000, CheckpointingMode.EXACTLY_ONCE);
+env.enableCheckpointing(60000,CheckpointingMode.EXACTLY_ONCE);
 ```
 
 ---
@@ -462,19 +495,13 @@ taskmanager.memory.task.off-heap.size: 4g
 
 # Деплой Apache Flink на AWS
 
-Apache Flink можно развернуть в облачной среде AWS с помощью **EKS (Kubernetes)**, а также интегрировать с **AWS Kinesis
-** для потоковой обработки данных. В этом документе рассмотрены основные шаги деплоя и мониторинга Flink на AWS.
-
----
-
-## **1. Flink на EKS (Kubernetes)**
+Flink можно развернуть в облачной среде AWS с помощью **EKS (Kubernetes)**,
+а также интегрировать с **AWS Kinesis** для потоковой обработки данных.
 
 ### **Что такое EKS и зачем использовать Kubernetes для Flink?**
 
 Amazon Elastic Kubernetes Service (EKS) позволяет **управлять контейнеризованными приложениями**, в том числе
 развертыванием Flink. Kubernetes даёт **гибкость, отказоустойчивость и масштабируемость**.
-
-### **Шаги развертывания Flink на EKS**
 
 #### **1. Установка и настройка AWS EKS**
 
@@ -520,8 +547,6 @@ kubectl apply -f flink-deployment.yaml
 Теперь Flink успешно развернут в EKS!
 
 ---
-
-## **2. Flink + AWS Kinesis (разница с Kafka)**
 
 ### **AWS Kinesis vs Apache Kafka**
 
@@ -622,7 +647,6 @@ kubectl port-forward svc/grafana 3000:3000
 3. Добавить источник данных **Prometheus** (`http://prometheus-server:80`).
 4. Импортировать **Flink Dashboard** из [Grafana Labs](https://grafana.com/grafana/dashboards/).
 
-
 ## **Оптимизация State**
 
 Flink использует **State Backend** для хранения данных:
@@ -632,10 +656,10 @@ Flink использует **State Backend** для хранения данны�
 
 ### **🛠 Улучшение производительности:**
 
-✔ **Incremental Checkpointing** – уменьшает нагрузку на хранилище.
-✔ **State TTL** – автоматически удаляет устаревшие данные.
-✔ **Оптимизация структуры хранения** – использование `MapState` вместо `ListState`.
-✔ **Балансировка нагрузки** – равномерное распределение данных между TaskManager'ами.
+- **Incremental Checkpointing** – уменьшает нагрузку на хранилище.
+- **State TTL** – автоматически удаляет устаревшие данные.
+- **Оптимизация структуры хранения** – использование `MapState` вместо `ListState`.
+- **Балансировка нагрузки** – равномерное распределение данных между TaskManager'ами.
 
 ---
 
@@ -643,9 +667,9 @@ Flink использует **State Backend** для хранения данны�
 
 ### **🔹 Restart Strategies** – управление перезапусками задач:
 
-✔ **Fixed Delay Restart** – фиксированное число ретраев с задержкой.
-✔ **Failure Rate Restart** – ограничение количества сбоев за интервал.
-✔ **No Restart** – остановка при ошибке.
+- **Fixed Delay Restart** – фиксированное число ретраев с задержкой.
+- **Failure Rate Restart** – ограничение количества сбоев за интервал.
+- **No Restart** – остановка при ошибке.
 
 Пример:
 
@@ -657,8 +681,157 @@ restart-strategy.fixed-delay.delay: 10s
 
 ### **🔹 Exception Handling и DLQ:**
 
-✔ **Try/Catch в Process Functions** – предотвращает падение всего пайплайна.  
-✔ **Dead Letter Queue (DLQ)** – отправка ошибочных сообщений в Kafka/S3.
-✔ **Мониторинг через CloudWatch/Prometheus** – настройка алертов на сбои.
+- **Try/Catch в Process Functions** – предотвращает падение всего пайплайна.
+- **Dead Letter Queue (DLQ)** – отправка ошибочных сообщений в Kafka/S3.
+- **Мониторинг через CloudWatch/Prometheus** – настройка алертов на сбои.
 
 ---
+
+# **Two-Phase Commit (2PC) в Apache Flink**
+
+**Two-Phase Commit (2PC)** – это протокол, обеспечивающий **Exactly-Once** обработку при записи в внешние системы (
+Kafka, JDBC, S3). Он предотвращает дубликаты и потери данных при сбоях.
+
+## **Как работает 2PC во Flink?**
+
+2PC выполняется в **две фазы**:
+
+1️⃣ **Pre-Commit (подготовка)**
+
+- Flink записывает данные во временное хранилище (Kafka, S3, БД), но **не делает их доступными**.
+- Данные фиксируются в **checkpoint**.
+
+2️⃣ **Commit (фиксация)**
+
+- Если checkpoint завершился успешно → данные **становятся видимыми**.
+- При сбое → данные **откатываются** (Abort), исключая дубли.
+
+---
+
+## **Как реализуется 2PC?**
+
+Flink использует **TwoPhaseCommitSinkFunction**.
+
+📌 **Основные шаги:**
+
+1. `beginTransaction()` – открытие транзакции.
+2. `preCommit()` – временная запись данных.
+3. `commit()` – подтверждение данных после checkpoint.
+4. `abort()` – откат данных при сбое.
+
+Пример для Kafka:
+
+```java
+
+@Override
+protected void commit(KafkaTransaction transaction) {
+    transaction.commit();
+}
+
+@Override
+protected void abort(KafkaTransaction transaction) {
+    transaction.abort();
+}
+```
+
+Где используется 2PC?
+
+- Kafka (Transactional Producer)
+- JDBC (MySQL, PostgreSQL, Oracle)
+- S3, HDFS (Staged Writes)
+
+---
+
+Плюсы и Минусы 2PC
+
+✅ Exactly-Once семантика без дубликатов.
+✅ Гарантированная доставка данных.
+✅ Работает с Kafka, БД, S3.
+
+❌ Замедляет поток данных.
+❌ Дополнительные ресурсы на обработку.
+❌ Не все системы поддерживают 2PC.
+
+---
+
+# **Как Kubernetes (K8s) может видеть внешний сервис?**
+
+Чтобы Kubernetes (K8s) мог подключаться к внешним сервисам (например, база данных, API, сторонний сервис), можно
+использовать **ExternalName Service** или **Ingress + ExternalName**.
+
+## **1️⃣ Использование ExternalName Service**
+
+📌 **Что это?**
+
+- Позволяет Kubernetes **проксировать трафик** на внешний сервис по DNS-имени.
+- В **K8s не создаётся реальный Pod**, просто переадресация запросов.
+
+🔹 **Пример**: подключаемся к **внешней базе данных (PostgreSQL)**, которая работает за пределами кластера K8s.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-db
+spec:
+  type: ExternalName
+  externalName: my-database.example.com  # Внешний домен (DNS)
+```
+
+📌 Когда использовать?
+✅ Если внешний сервис доступен по доменному имени (DNS).
+✅ Когда не нужно балансировать трафик внутри кластера.
+
+⚠ Ограничения
+
+- Не поддерживает балансировку нагрузки (работает только как DNS-алиас).
+- Только для DNS-имен, IP-адреса не поддерживаются.
+
+---
+
+2️⃣ Использование Ingress + ExternalName
+
+📌 Что это?
+
+- Позволяет Kubernetes проксировать запросы на внешний сервис через Ingress Controller.
+- Работает на HTTP/HTTPS уровне.
+
+🔹 Пример: внешний сервис (external-service.example.com) проксируется через Ingress.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: external-service
+spec:
+  rules:
+    - host: my-k8s-service.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: external-service
+                port:
+                  number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-service
+spec:
+  type: ExternalName
+  externalName: external-service.example.com
+```
+
+📌 Когда использовать?
+
+- Если внешний сервис доступен по HTTP/HTTPS.
+- Если нужно скрыть внешний сервис за K8s Ingress.
+
+⚠ Ограничения
+
+- Не подходит для TCP/UDP сервисов (только HTTP/HTTPS).
+- Требует Ingress Controller (например, Nginx, Traefik).
+
